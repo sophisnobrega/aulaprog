@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>O JOGO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 100px;
+            padding: 30px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 5px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<script>
+    function inserirNome() {
+        var nome1 = document.getElementById('nome1').value;
+        var nome2 = document.getElementById('nome2').value;
+        fetch('http://localhost:3000/inserir-nome', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ nome1: nome1, nome2: nome2 })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Dentro') {
+                var playerId = data.playerId;
+                buscarJogadores(playerId);
+            } else {
+                console.error('Deu certo não meu querido');
+            }
+        })
+        .catch(error => {
+            console.error('Ferrou foi tudo:', error);
+        });
+    }
+
+    function buscarJogadores(playerId) {
+        fetch(`http://localhost:3000/players?playerId=${playerId}`)
+        .then(response => response.json())
+        .then(data => {
+            // Processar os jogadores recebidos
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Ferrou foi tudo:', error);
+        });
+    }
+
+    function o_jogo() {
+        var resultado1 = Math.random(); // Gera um número aleatório entre 0 e 1
+
+        if (resultado1 < 0.5) {
+            alert("Parabéns, você ganhou!");
+        } else {
+            alert("Você perdeu");
+        }
+    }
+
+    function jogar() {
+        var nome1 = document.getElementById('nome1').value;
+        var nome2 = document.getElementById('nome2').value;
+        var resultado = document.getElementById('result');
+
+        if (nome1 === '' || nome2 === '') {
+            resultado.textContent = 'Por favor, insira o nome dos jogadores antes de jogar.';
+            return;
+        }
+
+        resultado.textContent = o_jogo();
+    }
+</script>
+<body>
+    <div class="container">
+        <h1>Jogo da Sorte</h1>
+        <p>Esse jogo é baseado em outro, onde em qualquer circunstância você perde ele. Mas nesse caso, você tem a chance de ganhar. Basta clicar no botão "jogar" e ver o resultado. Conte com a sorte e ganhe do seu adversário.</p>
+        <label for="nome1">Jogador 1:</label>
+        <input type="text" id="nome1">
+        <label for="nome2">Jogador 2:</label>
+        <input type="text" id="nome2">
+        <button onclick="jogar()">Jogar</button>
+        <div id="result"></div>
+    </div>
+</body>
+</html>
+
